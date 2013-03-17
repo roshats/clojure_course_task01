@@ -22,16 +22,14 @@ Example: ['https://github.com/clojure/clojure', 'http://clojure.com/', . . .]
     (loop [res [] arr (parse "clojure_google.html")]
       (if (empty? arr)
         res
-        (let [el (first arr)
-              tail (next arr)]
+        (let [el (first arr) tail (next arr)]
           (if (vector? el)
             (if (= (get (get el 1) :class) "r")
               (recur (conj res (get (get (get el 2) 1) :href)) tail)
-              (recur res (concat (next (next el)) tail)))
+              (recur res (concat (nthrest el 2) tail)))
             (recur res tail))
         )))
   )
 
 (defn -main []
-  (println (str "Found " (count (get-links)) " links!"))
-)
+  (println (str "Found " (count (get-links)) " links!")))
