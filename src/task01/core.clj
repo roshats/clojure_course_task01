@@ -2,25 +2,6 @@
   (:require [pl.danieljanus.tagsoup :refer :all])
   (:gen-class))
 
-(defn find-res [data]
-  (loop [res []
-         arr data]
-    (if (empty? arr)
-      res
-      (let [el (first arr)
-            tail (next arr)]
-        (if (vector? el)
-          (if (= (get (get el 1) :class) "r")
-            (recur (conj res (get (get (get el 2) 1) :href)) tail)
-            (recur res (concat (next (next el)) tail))
-          )
-          (recur res tail)
-        )
-      )
-    )
-  )
-)
-
 (defn get-links []
 " 1) Find all elements containing {:class \"r\"}.
 
@@ -38,7 +19,17 @@ The link from the example above is 'https://github.com/clojure/clojure'.
 
 Example: ['https://github.com/clojure/clojure', 'http://clojure.com/', . . .]
 "
-    (find-res (parse "clojure_google.html"))
+    (loop [res [] arr (parse "clojure_google.html")]
+      (if (empty? arr)
+        res
+        (let [el (first arr)
+              tail (next arr)]
+          (if (vector? el)
+            (if (= (get (get el 1) :class) "r")
+              (recur (conj res (get (get (get el 2) 1) :href)) tail)
+              (recur res (concat (next (next el)) tail)))
+            (recur res tail))
+        )))
   )
 
 (defn -main []
