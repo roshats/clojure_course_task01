@@ -3,20 +3,20 @@
   (:gen-class))
 
 (defn find-res [data]
-  (loop []
-    (if (vector? data)
-      (do
-        (if (= (get (get data 1) :class) "r")
-            [(get (get (get data 2) 1) :href)]
-
-            (if (empty? (next (next data)))
-              []
-              (reduce #(concat % %2) (map #(find-res %) (next (next data))))
-            )
-
+  (loop [res []
+         arr data]
+    (if (empty? arr)
+      res
+      (let [el (first arr)
+            tail (next arr)]
+        (if (vector? el)
+          (if (= (get (get el 1) :class) "r")
+            (recur (conj res (get (get (get el 2) 1) :href)) tail)
+            (recur res (concat (next (next el)) tail))
           )
+          (recur res tail)
         )
-      []
+      )
     )
   )
 )
